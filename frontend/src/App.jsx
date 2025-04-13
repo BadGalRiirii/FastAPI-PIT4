@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
-const API = "http://localhost:8000/todos/";
+const API = "https://fastapi-pit4.onrender.com" ;
 
 function App() {
   const [todos, setTodos] = useState([]);

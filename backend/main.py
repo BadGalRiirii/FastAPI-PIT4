@@ -16,7 +16,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",  # Vite dev server
-        "https://your-frontend-url.netlify.app",  # Netlify deployed frontend (replace as needed)
+        "https://fastapi-pit4.netlify.app/",  # Netlify deployed frontend (replace as needed)
     ],
     allow_credentials=True,
     allow_methods=["*"],
