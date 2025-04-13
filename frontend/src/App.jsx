@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
-const API = "https://fastapi-pit4.onrender.com" ;
+const API = "https://fastapi-pit4.onrender.com/todos/"; // ✅ Correct API base
 
 function App() {
   const [todos, setTodos] = useState([]);
@@ -13,9 +13,13 @@ function App() {
   const fetchTodos = async () => {
     let url = API;
     if (filter !== "all") url += `filter/${filter}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    setTodos(data);
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      setTodos(data);
+    } catch (error) {
+      console.error("Error fetching todos:", error);
+    }
   };
 
   useEffect(() => {
@@ -26,41 +30,53 @@ function App() {
     e.preventDefault();
     const payload = { title, completed: false };
 
-    if (editingId) {
-      await fetch(`${API}${editingId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...payload,
-          completed: todos.find(t => t.id === editingId).completed,
-        }),
-      });
-      setEditingId(null);
-    } else {
-      await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-    }
+    try {
+      if (editingId) {
+        await fetch(`${API}${editingId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...payload,
+            completed: todos.find(t => t.id === editingId).completed,
+          }),
+        });
+        setEditingId(null);
+      } else {
+        await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
 
-    setTitle("");
-    fetchTodos();
+      setTitle("");
+      fetchTodos();
+    } catch (error) {
+      console.error("Error submitting todo:", error);
+    }
   };
 
   const handleDelete = async (id) => {
-    await fetch(`${API}${id}`, { method: "DELETE" });
-    fetchTodos();
+    try {
+      await fetch(`${API}${id}`, { method: "DELETE" });
+      fetchTodos();
+    } catch (error) {
+      console.error("Error deleting todo:", error);
+    }
   };
 
   const toggleComplete = async (id, completed) => {
     const todo = todos.find(t => t.id === id);
-    await fetch(`${API}${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...todo, completed: !completed }),
-    });
-    fetchTodos();
+    try {
+      await fetch(`${API}${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...todo, completed: !completed }),
+      });
+      fetchTodos();
+    } catch (error) {
+      console.error("Error toggling completion:", error);
+    }
   };
 
   return (
